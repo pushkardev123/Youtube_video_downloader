@@ -11,7 +11,7 @@ const App = () => {
         }
 
         try {
-            const response = await fetch('https://80e8-183-83-152-152.ngrok-free.app/download', {
+            const response = await fetch('https://2ea3-2406-b400-71-c88e-85c3-95a4-6e61-f9fa.ngrok-free.app/download', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -23,20 +23,17 @@ const App = () => {
                 throw new Error('Failed to download video.');
             }
 
-            const responseData = await response.json();
+            const blob = await response.blob();
+            const downloadUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = downloadUrl;
+            a.download = 'video.mp4';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(downloadUrl);
+            setMessage('Download started.');
 
-            if (responseData.success) {
-                const downloadLink = `https://80e8-183-83-152-152.ngrok-free.app/download/${responseData.file}`;
-                const a = document.createElement('a');
-                a.href = downloadLink;
-                a.download = responseData.file;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                setMessage('Download started.');
-            } else {
-                setMessage(responseData.message);
-            }
         } catch (error) {
             setMessage(`Error: ${error.message}`);
         }
