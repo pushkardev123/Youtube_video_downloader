@@ -1,25 +1,60 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+    const [url, setUrl] = useState('');
+    const [message, setMessage] = useState('');
+
+    const handleDownload = async () => {
+        if (!url.trim()) {
+            setMessage('Please enter a valid URL.');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:3000/download', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ url })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to download video.');
+            }
+
+            const responseData = await response.json();
+
+            if (responseData.success) {
+                const downloadLink = `http://localhost:3000/download/${responseData.file}`;
+                const a = document.createElement('a');
+                a.href = downloadLink;
+                a.download = responseData.file;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setMessage('Download started.');
+            } else {
+                setMessage(responseData.message);
+            }
+        } catch (error) {
+            setMessage(`Error: ${error.message}`);
+        }
+    };
+
+    return (
+        <div>
+            <h1>Download YouTube Video</h1>
+            <input
+                type="text"
+                placeholder="Enter YouTube URL"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+            />
+            <button onClick={handleDownload}>Download</button>
+            {message && <p>{message}</p>}
+        </div>
+    );
+};
 
 export default App;
