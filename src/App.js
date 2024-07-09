@@ -11,7 +11,7 @@ const App = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:3000/download', {
+            const response = await fetch('https://80e8-183-83-152-152.ngrok-free.app/download', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -26,7 +26,7 @@ const App = () => {
             const responseData = await response.json();
 
             if (responseData.success) {
-                const downloadLink = `http://localhost:3000/download/${responseData.file}`;
+                const downloadLink = `https://80e8-183-83-152-152.ngrok-free.app/download/${responseData.file}`;
                 const a = document.createElement('a');
                 a.href = downloadLink;
                 a.download = responseData.file;
